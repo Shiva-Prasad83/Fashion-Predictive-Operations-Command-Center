@@ -64,6 +64,31 @@ app.use(async (req, res, next) => {
     }
 });
 
+// ── Root route ────────────────────────────────────────────────
+app.get('/', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Fashion Predictive Operations Command Center API',
+        version: '1.0.0',
+        status: 'running',
+        timestamp: new Date().toISOString(),
+        endpoints: {
+            health: '/health',
+            auth: '/api/auth',
+            dashboard: '/api/dashboard',
+            workflows: '/api/workflows',
+            tasks: '/api/tasks',
+            ai: '/api/ai',
+            forecasts: '/api/forecasts',
+            anomalies: '/api/anomalies',
+            users: '/api/users',
+            notifications: '/api/notifications',
+            audit: '/api/audit',
+            reports: '/api/reports',
+        },
+    });
+});
+
 // ── Health check ──────────────────────────────────────────────
 app.get('/health', (req, res) => {
     res.json({
