@@ -1,2 +1,18 @@
 node_modules
+
+# Environment files with secrets — never commit these
 .env
+.env.local
+backend/.env
+
+# Build output
+dist
+build
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
