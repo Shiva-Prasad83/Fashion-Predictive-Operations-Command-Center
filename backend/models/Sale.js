@@ -87,7 +87,6 @@ const saleSchema = new mongoose.Schema({
 
 saleSchema.index({ saleDate: -1, organisationId: 1 });
 saleSchema.index({ channel: 1, saleDate: -1 });
-saleSchema.index({ customerId: 1 });
 saleSchema.index({ deletedAt: 1 });
 
 module.exports = mongoose.model('Sale', saleSchema);

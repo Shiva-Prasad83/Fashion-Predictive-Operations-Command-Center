@@ -20,19 +20,38 @@ const reportRoutes = require('./routes/reportRoutes');
 const app = express();
 
 // ── CORS ──────────────────────────────────────────────────────
+// Parse allowed origins — strip trailing slashes so comparison always works
 const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
     .split(',')
-    .map(o => o.trim());
+    .map(o => o.trim().replace(/\/+$/, '')); // remove trailing slash
 
-app.use(cors({
+const corsOptions = {
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+        // Allow requests with no origin (Postman, mobile apps, server-to-server)
+        if (!origin) return callback(null, true);
+        // Normalise incoming origin — strip trailing slash
+        const normOrigin = origin.replace(/\/+$/, '');
+        if (
+            allowedOrigins.includes('*') ||
+            allowedOrigins.includes(normOrigin) ||
+            // Allow any *.vercel.app subdomain during development/preview deployments
+            normOrigin.endsWith('.vercel.app')
+        ) {
             return callback(null, true);
         }
+        console.warn(`CORS blocked: ${origin}`);
         callback(new Error(`CORS: origin ${origin} not allowed`));
     },
     credentials: true,
-}));
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+};
+
+app.use(cors(corsOptions));
+
+// Explicitly handle preflight OPTIONS for all routes
+app.options('/{*path}', cors(corsOptions));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
